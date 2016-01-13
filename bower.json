@@ -1,0 +1,23 @@
+{
+      "name"                        : "dash-video"
+    , "description"                 : "package description"
+    , "version"                     : "0.1.0"
+    , "homepage"                    : "https://github.com/joinbox/dash-video"
+    , "author"                      : "Michael van der Weg <michael@joinbox.com> (http://joinbox.com/)"
+    , "license"                     : "MIT"
+    , "repository": {
+          "url"                     : "https://github.com/joinbox/dash-video.git"
+        , "type"                    : "git"
+    }
+    , "bugs": {
+        "url"                       : "https://github.com/joinbox/dash-video/issues"
+    }
+    , "dependencies": {
+          "ee-class"                : "1.x"
+        , "ee-types"                : "2.x"
+        , "ee-log"                  : "0.3.x"
+        , "ee-event-emitter"        : "0.3.x"
+    }
+    , "optionalDependencies": {}
+    , "keywords"                    : ["", "", "", ""]
+}
