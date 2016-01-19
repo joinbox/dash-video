@@ -1,0 +1,41 @@
+{
+  "name": "ee-types",
+  "description": "Reliable type detection",
+  "main": "dist/ee-types.min.js",
+  "authors": [
+    "Michael van der Weg <michael@joinbox.com> (http://joinbox.com/)"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "type-detection",
+    "type",
+    "es6"
+  ],
+  "homepage": "https://github.com/eventEmitter/ee-types",
+  "moduleType": [
+    "amd",
+    "globals",
+    "node"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "example",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "ee-class": "1.x"
+  },
+  "version": "2.1.1",
+  "_release": "2.1.1",
+  "_resolution": {
+    "type": "version",
+    "tag": "v2.1.1",
+    "commit": "29062766e9bfefe0ef6c0853e1ca35649e04f0be"
+  },
+  "_source": "git://github.com/eventEmitter/ee-types.git",
+  "_target": "2.x",
+  "_originalSource": "ee-types"
+}

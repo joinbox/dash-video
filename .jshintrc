@@ -9,4 +9,5 @@
     , "esnext"                  : true
     , "laxcomma"                : true
     , "node"                    : true
+    , "predef"                  : ["HTMLElement", "window", "document", "navigator"]
 }

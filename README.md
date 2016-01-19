@@ -1,11 +1,14 @@
 # dash-video
 
-description
+A web component for playing back responsive dash video
 
+- Media Queries for the video sources
+- DASH support
+- iOS autoplay support 
 
-[![npm](https://img.shields.io/npm/dm/dash-video.svg?style=flat-square)](https://www.npmjs.com/package/dash-video)
-[![Travis](https://img.shields.io/travis/eventEmitter/dash-video.svg?style=flat-square)](https://travis-ci.org/eventEmitter/dash-video)
-[![node](https://img.shields.io/node/v/dash-video.svg?style=flat-square)](https://nodejs.org/)
+## Encoding video
+
+For instructions on how to encode videos on ubuntu see [encoding.md](encoding.md)
 
 
 ## API

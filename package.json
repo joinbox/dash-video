@@ -1,0 +1,10 @@
+{
+      "name"                            : "no-name"
+    , "private"                         : true
+    , "description"                     : "test server because of cors problems"
+    , "dependencies": {
+          "express"                     : "*"
+        , "compression"                 : "*"
+        , "shaka-player"                : "1.x"
+    }
+}
