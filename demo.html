@@ -5,13 +5,21 @@
             <script src="bower_components/webcomponentsjs/webcomponents.min.js"></script>
         </head>
         <body>
-            <link rel="import"  href="src/dash-video-dev.html">
+            <link rel="import"  href="src/dash-video.html">
 
 
-            <dash-video autoplay loop poster="poster.jpg" style="width:1280px; height:720px;">
+            <dash-video autoplay loop poster="poster.jpg" style="width:1280px; height:720px;" id="dash-video-player">
                 <source type="application/dash+xml"     media="screen and (min-width:1005px)"   src="http://whaever.127.0.0.1.xip.io:80/long_manifest.mpd" />
                 <source type="video/mp4"                media="screen and (min-width:1025px)"   src="video/input_1080p.mp4" />
                 <source type="video/mp4"                media="screen and (min-width:125px)"    src="video/crapple_hi.mp4" data-crapple/>
             </dash-video>
+
+
+
+            <script>
+            setTimeout(function() {
+            	//document.querySelector('#dash-video-player').pause();
+            }, 2000);
+            </script>
         </body>
     </html>

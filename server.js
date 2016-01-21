@@ -15,7 +15,7 @@
         else next();
     });
 
-   // app.use(compression());
+    app.use(compression());
         
     app.use(express.static(__dirname, {index: 'demo.html'}));
 

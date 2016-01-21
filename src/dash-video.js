@@ -37,13 +37,9 @@
              * let set up the player
              */
             , createdCallback: function() {
-                var jsSources = [];
 
-
-                // much needed storage for the
-                // sources
+                // storage for the video sources
                 this.loadedSources = [];
-
 
                 // need to know if we're on ios
                 this.isCrapple = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
@@ -72,18 +68,8 @@
 
 
 
-                // add h263 decoder
-                if (this.isCrapple) {
-                    jsSources.push('../lib/CrapplePlayer.js');
-                    jsSources.push('../lib/Stream.js');
-                }
 
-
-                // load dash files if required
-                if (this.dashSource) jsSources.push('../lib/shaka-player.compiled.js');
-
-
-                requirejs(jsSources, function() { 
+                var loadComplete = function() {
                     var args = [];
                     for (var i = 0, l = arguments.length; i < l; i++) args.push(arguments[i]);
 
@@ -96,7 +82,16 @@
 
                     // player is ready to be used
                     this.loaded = true;
-                }.bind(this));
+                }.bind(this);
+
+
+
+                // load specific modules depending on the browser
+                // and media sources. dont optimize this code, the
+                // require.js optimizer requires this syntax :/
+                if (this.isCrapple) requirejs(['../lib/CrapplePlayer.js', '../lib/Stream.js'], loadComplete);
+                else if (this.dashSource) requirejs(['../lib/shaka-player.compiled.js'], loadComplete);
+                else loadComplete();
             }
 
 
