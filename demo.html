@@ -8,10 +8,10 @@
             <link rel="import"  href="src/dash-video-dev.html">
 
 
-            <dash-video autoplay loop controls poster="poster.jpg" style="width:1280px; height:720px;">
-                <source type="application/dash+xml"     media="screen and (min-width:1025px)"   src="http://whaever.127.0.0.1.xip.io:80/manifest.mpd" />
+            <dash-video autoplay loop poster="poster.jpg" style="width:1280px; height:720px;">
+                <source type="application/dash+xml"     media="screen and (min-width:1005px)"   src="http://whaever.127.0.0.1.xip.io:80/long_manifest.mpd" />
                 <source type="video/mp4"                media="screen and (min-width:1025px)"   src="video/input_1080p.mp4" />
-                <source type="video/mp4"                media="screen and (max-width:1025px)"   src="video/input_1080p.mp4" />
+                <source type="video/mp4"                media="screen and (min-width:125px)"    src="video/crapple_hi.mp4" data-crapple/>
             </dash-video>
         </body>
     </html>

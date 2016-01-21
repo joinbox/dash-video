@@ -3,7 +3,7 @@
 
 
     // load dependencies required by the player
-    requirejs(['bower/ee-class/dist/ee-class.min', '../lib/shaka-player.compiled'], function(Class, shaka) {
+    requirejs(['bower/ee-class/dist/ee-class.min'], function(Class) {
         var Player;
 
 
@@ -22,10 +22,14 @@
             , playing: {
                 get: function() {
                     if (this.video) return !this.video.paused;
-
-                    return false;
+                    else if (this.crapplePlayer) return this.crapplePlayer.playing;
+                    else return false;
                 }
             }
+
+
+
+
 
 
 
@@ -68,23 +72,27 @@
 
 
 
-
-
-                // load dash files if required
-                //if (this.dashSource) jsSources.push('../lib/shaka-player.compiled.js');
-
                 // add h263 decoder
                 if (this.isCrapple) {
-
+                    jsSources.push('../lib/CrapplePlayer.js');
+                    jsSources.push('../lib/Stream.js');
                 }
 
 
-                // laod required files
-                this.loadJavascriptDependencies(jsSources, function() {
-                    
-                    // set up the player
-                    if (this.isCrapple) this.createPlayer();
-                    else this.createPlayer();
+                // load dash files if required
+                if (this.dashSource) jsSources.push('../lib/shaka-player.compiled.js');
+
+
+                requirejs(jsSources, function() { 
+                    var args = [];
+                    for (var i = 0, l = arguments.length; i < l; i++) args.push(arguments[i]);
+
+                    try {
+                        if (this.isCrapple) this.createCrapplePlayer.apply(this, args);
+                        else this.createPlayer.apply(this, args);
+                    } catch (e) {
+                        console.log(e, e.stack);
+                    }
 
                     // player is ready to be used
                     this.loaded = true;
@@ -105,6 +113,7 @@
 
             , play: function() {
                 if (this.video) this.video.play();
+                else if (this.crapplePlayer) this.crapplePlayer.play();
             }
 
 
@@ -120,11 +129,48 @@
 
             , pause: function() {
                 if (this.video) this.video.pause();
+                else if (this.crapplePlayer) this.crapplePlayer.pause();
             }
 
 
 
 
+
+
+
+
+
+            /**
+             * create crapple player
+             */
+            , createCrapplePlayer: function(Player, Stream) {
+                this.crapplePlayer = new Player({
+                      stream     : new Stream(this.crappleSource)
+                    , useWorkers : false
+                    , webgl      : 'auto'
+                    , render     : true
+                    , loop       : this.hasAttribute('loop')
+                    , size: {
+                          width  : this.root.offsetWidth
+                        , height : this.root.offsetHeight
+                    }
+                });
+
+
+                this.crappleVideo = this.crapplePlayer.canvas;
+                this.crappleVideo.setAttribute('width', this.root.offsetWidth);
+                this.crappleVideo.setAttribute('height', this.root.offsetHeight);
+                //this.crappleVideo.getContext('2d').scale(2, 2);
+
+                this.root.appendChild(this.crappleVideo);
+
+                this.crapplePlayer.onStatisticsUpdated = function(s) {
+                    //console.log(s);
+                };
+    
+
+                if (this.hasAttribute('autoplay')) this.play();  
+            }
 
 
 
@@ -138,7 +184,7 @@
              * for crapple based mobile devides see the
              * createCrapplePlayer method
              */
-            , createPlayer: function() {
+            , createPlayer: function(shaka) {
                 if (this.loadedSources.length === 0) this.log('No video sources! check the sources and their media queries!');
                 else {
 
@@ -146,6 +192,8 @@
                     this.video = document.createElement('video');
                     this.video.setAttribute('width', this.root.offsetWidth);
                     this.video.setAttribute('height', this.root.offsetHeight);
+                    if (this.getAttribute('controls')) this.video.setAttribute('controls');
+                    if (this.getAttribute('loop')) this.video.setAttribute('loop');
 
 
                     // add polyfills if possible
@@ -221,15 +269,18 @@
             , prepareSources: function() {
                 Array.prototype.forEach.call(this.children, function(childElement) {
                     if (childElement.media && window.matchMedia) {
-                        console.dir(window.matchMedia(childElement.media));
+
                         if (window.matchMedia(childElement.media) && window.matchMedia(childElement.media).matches) {
 
                             if (childElement.type === 'application/dash+xml') this.dashSource = childElement.src;
-                            this.loadedSources.push({
-                                  src: childElement.src
-                                , media: null
-                                , type: childElement.type
-                            });
+                            else if (childElement.type === 'video/mp4' && childElement.hasAttribute('data-crapple')) this.crappleSource = childElement.src;
+                            else {
+                                this.loadedSources.push({
+                                      src: childElement.src
+                                    , media: childElement.media
+                                    , type: childElement.type
+                                });
+                            }
                         }
                     }
                     else {
@@ -237,11 +288,14 @@
 
                         // sort sources
                         if (childElement.type === 'application/dash+xml') this.dashSource = childElement.src;
-                        this.loadedSources.push({
-                              src: childElement.src
-                            , media: null
-                            , type: childElement.type
-                        });
+                        else if (childElement.type === 'video/mp4' && childElement.hasAttribute('data-crapple')) this.crappleSource = childElement.src;
+                        else {
+                            this.loadedSources.push({
+                                  src: childElement.src
+                                , media: null
+                                , type: childElement.type
+                            });
+                        }
                     }
                 }.bind(this));
             }
@@ -323,46 +377,6 @@
                 // get computed height
                 this.elementHeight = this.root.offsetHeight;
                 this.elementWidth = this.root.offsetWidth;
-            }
-
-
-
-
-
-
-
-
-            /**
-             * dynamically load more scripts
-             *
-             * @param {string[]} scripts the scripts to load
-             * @param {function} callback
-             */
-            , loadJavascriptDependencies: function(scripts, callback) {
-                var loaded = 0;
-                var load;
-
-                if (scripts.length === 0) callback();
-                else {
-
-                    // wait until all scripts were laoded
-                    load = function(err) {
-                        if (++loaded === scripts.length) callback();
-                    }.bind(this);
-
-
-                    // load all scripts
-                    scripts.forEach(function(src, index) {
-                        var tag = document.createElement('script');
-
-                        tag.addEventListener('load', load);
-
-                        tag.setAttribute('src', src);
-                        tag.setAttribute('id', 'dash-player-'+index);
-
-                        this.sRoot.appendChild(tag);
-                    }.bind(this));
-                }
             }
 
 
