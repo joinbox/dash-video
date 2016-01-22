@@ -28,10 +28,32 @@
 <a id="dash-video" class="anchor" href="#dash-video" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>dash-video</h1>
 
 <p>
-   <dash-video autoplay loop style="width:960px; height:540px;" id="dash-video-player">
-        <source type="application/dash+xml"       media="screen and (min-width:1005px)"   src="video/sample_manifest.mpd" />
-        <source type="video/mp4"                  media="screen and (min-width:1025px)"   src="video/sample_video_720p_1500k.mp4" />
-        <source type="video/mp4"                  media="screen and (max-width:1025px)"   src="video/sample_crappe_720p.mp4" data-crapple/>
+    <style type="text/css">
+        .dash-video-player {
+            display: block;
+        }
+        @media screen and (max-width: 672px) {
+            .dash-video-player {
+                width: 640px;
+                height: 360px;
+            }
+        }
+        @media screen and (min-width: 673px) {
+            .dash-video-player {
+                width: 1280px;
+                height: 720px;
+            }
+        }
+        
+    </style>
+
+    <dash-video autoplay loop class="dash-video-player">
+        <source type="application/dash+xml"       media="screen and (min-width:1000px)"                           src="video/sample_manifest.mpd" />
+        <source type="video/mp4"                  media="screen and (max-width:1024px)"                           src="video/sample_video_360p_500k.mp4" />
+        <source type="video/mp4"                  media="screen and (min-width:1025px) and (max-width:1919px)"    src="video/sample_video_720p_500k.mp4" />
+        <source type="video/mp4"                  media="screen and (min-width:1920px)"                           src="video/sample_video_1080p_3000k.mp4" />
+        <source type="video/mp4"                  media="screen and (max-width:1024px)"                           src="video/sample_crappe_360p.mp4" data-crapple />
+        <source type="video/mp4"                  media="screen and (min-width:1025px)"                           src="video/sample_crappe_720p.mp4" data-crapple />
     </dash-video>
 </p>
 
@@ -102,7 +124,7 @@ it's probably free for personal and non-commercial use. Use on your own risk!</l
     &lt;!-- normal html5 video --&gt;
     &lt;source type="video/mp4"                media="screen and (min-width:1025px)"   src="video/input_1080p.mp4" /&gt;
 
-    &lt;!-- special video for ios, not the data-crapple attribute --&gt;
+    &lt;!-- special video for ios, note the data-crapple attribute --&gt;
     &lt;source type="video/mp4"                media="screen and (min-width:125px)"    src="video/crapple_hi.mp4" data-crapple/&gt;
 &lt;/dash-video&gt;
 </code></pre>
