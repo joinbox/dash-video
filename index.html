@@ -8,8 +8,10 @@
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
     <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+    <script src="bower_components/webcomponentsjs/webcomponents.min.js"></script>
   </head>
   <body>
+    <link rel="import" href="bower_components/dash-video/src/dash-video.html">
     <section class="page-header">
       <h1 class="project-name">Dash-video</h1>
       <h2 class="project-tagline">A web component for playing back responsive dash video</h2>
@@ -21,6 +23,14 @@
     <section class="main-content">
       <h1>
 <a id="dash-video" class="anchor" href="#dash-video" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>dash-video</h1>
+
+<p>
+   <dash-video autoplay loop style="width:960px; height:540px;" id="dash-video-player">
+        <source type="application/dash+xml"       media="screen and (min-width:1005px)"   src="video/sample_manifest.mpd" />
+        <source type="video/mp4"                  media="screen and (min-width:1025px)"   src="video/sample_video_720p_1500k.mp4" />
+        <source type="video/mp4"                  media="screen and (max-width:1025px)"   src="video/csample_crappe_720p.mp4" data-crapple/>
+    </dash-video>
+</p>
 
 <p>A web component for playing back demo videos</p>
 
