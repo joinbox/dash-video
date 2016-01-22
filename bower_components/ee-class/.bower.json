@@ -1,0 +1,37 @@
+{
+  "name": "ee-class",
+  "description": "Fast prototype based javascript classes",
+  "main": "dist/ee-class.min.js",
+  "authors": [
+    "Michael van der Weg <michael@eventemitter.com> (http://eventemitter.com/)"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "class"
+  ],
+  "homepage": "https://github.com/eventEmitter/ee-class",
+  "moduleType": [
+    "amd",
+    "globals",
+    "node"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "sandbox",
+    "performance",
+    "test",
+    "tests"
+  ],
+  "version": "1.4.0",
+  "_release": "1.4.0",
+  "_resolution": {
+    "type": "version",
+    "tag": "v1.4.0",
+    "commit": "1b6423fdab67e64301e51a9b2d9621f1855557a2"
+  },
+  "_source": "git://github.com/eventEmitter/ee-class.git",
+  "_target": "1.x",
+  "_originalSource": "ee-class"
+}

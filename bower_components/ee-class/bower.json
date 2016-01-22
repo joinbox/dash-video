@@ -1,0 +1,27 @@
+{
+  "name": "ee-class",
+  "description": "Fast prototype based javascript classes",
+  "main": "dist/ee-class.min.js",
+  "authors": [
+    "Michael van der Weg <michael@eventemitter.com> (http://eventemitter.com/)"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "class"
+  ],
+  "homepage": "https://github.com/eventEmitter/ee-class",
+  "moduleType": [
+    "amd",
+    "globals",
+    "node"
+  ],
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "sandbox",
+    "performance",
+    "test",
+    "tests"
+  ]
+}
