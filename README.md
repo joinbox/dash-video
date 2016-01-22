@@ -21,7 +21,7 @@ Made possible by
 - [Broadway](https://github.com/mbebenita/Broadway)
 - [Shaka Player](https://github.com/google/shaka-player)
 
-Thanks for the great!
+Thanks for the great work!
 
 
 
