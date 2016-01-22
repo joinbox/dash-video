@@ -15,7 +15,6 @@
   "dependencies": {
     "webcomponentsjs": "0.7.x",
     "media-match": "2.0.x",
-    "video.js": "5.5.x",
     "ee-class": "1.x",
     "ee-types": "2.x"
   },
