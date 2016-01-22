@@ -32,16 +32,34 @@
         .dash-video-player {
             display: block;
         }
-        @media screen and (max-width: 672px) {
+        @media screen and (max-width: 370px) {
+            .dash-video-player {
+                width: 288px;
+                height: 162px;
+            }
+        }
+        @media screen and (max-width: 672px) and (min-width: 371px) {
+            .dash-video-player {
+                width: 352px;
+                height: 198px;
+            }
+        }
+        @media screen and (max-width: 999px) and (min-width: 673px) {
             .dash-video-player {
                 width: 640px;
                 height: 360px;
             }
         }
-        @media screen and (min-width: 673px) {
+        @media screen and (max-width: 1300px) and (min-width: 1000px) {
             .dash-video-player {
-                width: 1280px;
-                height: 720px;
+                width: 896px;
+                height: 504px;
+            }
+        }
+        @media screen and (min-width: 1301px) {
+            .dash-video-player {
+                width: 960px;
+                height: 540px;
             }
         }
         

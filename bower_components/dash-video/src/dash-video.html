@@ -11,6 +11,7 @@
     var scripts = [];
     var container = document.currentScript.ownerDocument.querySelector('#dash-video-scripts-container') || document.querySelector('head');
 
+
     for (var i = 0, l = links.length; i< l; i++) {
         if (/dash-video\/src\/dash-video.html/.test(links[i].href)) {
             bowerComponentsPath = links[i].href.replace('dash-video/src/dash-video.html', '');
@@ -50,6 +51,7 @@
 
     // load basic dependencies
     loadScripts(scripts, function() {
+        
         // configure require js
         requirejs.config({
             paths: {
