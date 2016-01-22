@@ -1,11 +1,67 @@
-<script src="../lib/require.js"></script>
-<script src="/bower_components/media-match/media.match.min.js"></script>
+<div id="dash-video-scripts-container"></div>
+
 <script>
-    requirejs.config({
-        paths: {
-              'bower': '../bower_components'
-            , 'dashVideoLib': '../bower_components/dash-video/lib'
+    // namespace storage
+    if (!window.ee) window.ee = {};
+
+    // need to deect the bower compoentns path, can be done using
+    // the path found in the import statement
+    var links = window.document.querySelectorAll('link[rel="import"]');
+    var bowerComponentsPath = 'dash_video_path_not_found';
+    var scripts = [];
+    var container = document.currentScript.ownerDocument.querySelector('#dash-video-scripts-container');
+
+
+    for (var i = 0, l = links.length; i< l; i++) {
+        if (/dash-video\/src\/dash-video.html/.test(links[i].href)) {
+            bowerComponentsPath = links[i].href.replace('dash-video/src/dash-video.html', '');
         }
+    }
+
+    // publish
+    window.ee.bowerComponentsPath = bowerComponentsPath;
+
+
+    // async scripts loader
+    var loadScripts = function(urls, cb) {
+        var loaded = 0;
+
+        if (!urls.length) cb();
+
+        var done = function() {
+            if (++loaded === urls.length) cb();
+        };
+
+        for (var i = 0, l = urls.length; i< l; i++) {
+            var el = document.createElement('script');
+            el.setAttribute('src', urls[i]);
+            el.addEventListener('load', done);
+            container.appendChild(el);
+        }
+    };
+
+
+
+    // now check if we needd ot load require.js
+    if (typeof define !== 'function' || !define.amd) scripts.push(bowerComponentsPath+'dash-video/lib/require.js'); 
+
+    // load polyfill or media match if required
+    if (!window.matchMedia) scripts.push(bowerComponentsPath+'media-match/media.match.min.js'); 
+
+
+    // load basic dependencies
+    loadScripts(scripts, function() {
+        
+        // configure require js
+        requirejs.config({
+            paths: {
+                  'bower'       : bowerComponentsPath
+                , 'dashVideoLib': bowerComponentsPath+'dash-video/lib'
+            }
+        });
+
+        var dashVideo = document.createElement('script');
+        dashVideo.setAttribute('src', bowerComponentsPath+'dash-video/src/dash-video.js');
+        container.appendChild(dashVideo);
     });
 </script>
-<script src="dash-video.js"></script>
