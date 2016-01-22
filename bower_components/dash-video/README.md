@@ -4,8 +4,8 @@ A web component for playing back demo videos
 
 - support for auto play on all platforms
 - non fullscreen videos on the iphone
-- dash, adaptove video support
-- html5 video support
+- dash, adaptive video support (webm, vp9, ogg vorbiss)
+- html5 video support (any format supported by the browser)
 - support for media queries on the video sources
 
 Known problems:
@@ -13,15 +13,28 @@ Known problems:
 - no controls
 - no audio on iOS
 - the pain in the ass of encoding videos
-- dash is slow on android devices (disable playback using meia queries)
+- dash is slow on android devices (disable playback using media queries)
 
 
-made possible by 
+Made possible by 
 
 - [Broadway](https://github.com/mbebenita/Broadway)
 - [Shaka Player](https://github.com/google/shaka-player)
 
+Thanks for the great work!
 
+
+
+## License
+
+Have a look at https://opensource.org/licenses for details
+
+- Code Commited by joinbox staff: MIT
+- For the iOS part (h.264 decoder), please have a look at the licence agreements of the mpeg-la,
+  it's probably free for personal and non-commercial use. Use on your own risk!
+- Broadway: 3-clause BSD & Apache 2.0 license
+- Shaka Player: Apache License 2.0
+- Sample movies: Big Buck Bunny (c) copyright 2008, Blender Foundation / [www.bigbuckbunny.org](www.bigbuckbunny.org)
 
 
 ## installation
@@ -30,12 +43,13 @@ made possible by
 
 
 
+
 ## Using the component
 
-you need to include the following lines in the head section of your html file
+You need to include the following lines in the head section of your html file
 
     <script src="bower_components/webcomponentsjs/webcomponents.min.js"></script>
-    <link rel="import"  href="bower_components/src/dash-video.html">
+    <link rel="import"  href="bower_components/dash-video/src/dash-video.html">
 
 
 Setting up your first video using the dash-video tag
@@ -53,7 +67,12 @@ Setting up your first video using the dash-video tag
 
 That's it!
 
+If you have trouble loading video files from localhost while developing you may start the node server that set the correct cors headers:
 
+    npm i
+    node server.js
+
+The server listens on port 8000, you can now navigate to (localhost:8000)[http://whatever.127.0.0.1.xip.io:8000/]
 
 
 
@@ -132,6 +151,7 @@ ffmpeg
 
     git clone git://source.ffmpeg.org/ffmpeg.git
     cd ffmpeg
+    # maybe: cmake
     ./configure --enable-libvpx --enable-libvorbis --enable-gpl --enable-libx264
     make
     sudo make install
