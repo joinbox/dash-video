@@ -60,7 +60,7 @@ Setting up your first video using the dash-video tag
         <!-- normal html5 video -->
         <source type="video/mp4"                media="screen and (min-width:1025px)"   src="video/input_1080p.mp4" />
 
-        <!-- special video for ios, not the data-crapple attribute -->
+        <!-- special video for ios, note the data-crapple attribute -->
         <source type="video/mp4"                media="screen and (min-width:125px)"    src="video/crapple_hi.mp4" data-crapple/>
     </dash-video>
 
