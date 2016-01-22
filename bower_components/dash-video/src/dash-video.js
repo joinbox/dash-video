@@ -89,9 +89,10 @@
                 // load specific modules depending on the browser
                 // and media sources. dont optimize this code, the
                 // require.js optimizer requires this syntax :/
+                //if (this.isCrapple) requirejs(['bower/dash-video/lib/CrapplePlayer.js', '../lib/Stream.js'], loadComplete);
+                //else if (this.dashSource) requirejs(['bower/dash-video/lib/shaka-player.compiled.js'], loadComplete);
                 if (this.isCrapple) requirejs(['dashVideoLib/CrapplePlayer', 'dashVideoLib/Stream.js'], loadComplete);
                 else if (this.dashSource) requirejs(['dashVideoLib/shaka-player.compiled'], loadComplete);
-
                 else loadComplete();
             }
 
@@ -216,7 +217,7 @@
 
                             if (this.hasAttribute('autoplay')) this.play();
                         }.bind(this)).catch(function(err) {
-                            // alert(err);
+                            console.log(err, err.stack);
 
                             // crap, switch to classic methods
                             this.dashSource = null;
@@ -364,12 +365,14 @@
                 this.root.setAttribute('style', this.getAttribute('style'));
                 this.root.style.display = 'inline-block';
                 
-
+                
                 // check if there is a width && height attribute
                 if (this.hasAttribute('width')) this.root.style.width = this.getAttribute('width')+'px';
+                else if (this.style.width) this.root.style.width = this.style.width;
                 else this.root.style.width = this.offsetWidth+'px';
-
+                
                 if (this.hasAttribute('height')) this.root.style.height = this.getAttribute('height')+'px';
+                else if (this.style.height) this.root.style.height = this.style.height;
                 else this.root.style.height = this.offsetHeight+'px';
 
 

@@ -1,20 +1,19 @@
 # dash-video
 
-A web component for playing back demo videos
+A web component for playing back videos
 
-- support for auto play on all platforms
+- auto play on all platforms
 - non fullscreen videos on the iphone
-- dash, adaptive video support (webm, vp9, ogg vorbiss)
+- dash, adaptive video support (webm, vp9, ogg vorbis)
 - html5 video support (any format supported by the browser)
 - support for media queries on the video sources
 
-Known problems:
+Known issues:
 
 - no controls
-- no audio on iOS
+- iOS (non fullscreen / autoplay): no audio, only short videos, up to 720p video
 - the pain in the ass of encoding videos
-- dash is slow on android devices (disable playback using media queries)
-
+- dash is slow on android devices (you can disable playback using media queries)
 
 Made possible by 
 
@@ -61,7 +60,7 @@ Setting up your first video using the dash-video tag
         <!-- normal html5 video -->
         <source type="video/mp4"                media="screen and (min-width:1025px)"   src="video/input_1080p.mp4" />
 
-        <!-- special video for ios, not the data-crapple attribute -->
+        <!-- special video for ios, note the data-crapple attribute -->
         <source type="video/mp4"                media="screen and (min-width:125px)"    src="video/crapple_hi.mp4" data-crapple/>
     </dash-video>
 
