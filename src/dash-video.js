@@ -89,8 +89,6 @@
                 // load specific modules depending on the browser
                 // and media sources. dont optimize this code, the
                 // require.js optimizer requires this syntax :/
-                //if (this.isCrapple) requirejs(['bower/dash-video/lib/CrapplePlayer.js', '../lib/Stream.js'], loadComplete);
-                //else if (this.dashSource) requirejs(['bower/dash-video/lib/shaka-player.compiled.js'], loadComplete);
                 if (this.isCrapple) requirejs(['dashVideoLib/CrapplePlayer', 'dashVideoLib/Stream'], loadComplete);
                 else if (this.dashSource) requirejs(['dashVideoLib/shaka-player.compiled'], loadComplete);
                 else loadComplete();
@@ -157,14 +155,8 @@
                 this.crappleVideo = this.crapplePlayer.canvas;
                 this.crappleVideo.setAttribute('width', this.root.offsetWidth);
                 this.crappleVideo.setAttribute('height', this.root.offsetHeight);
-                //this.crappleVideo.getContext('2d').scale(2, 2);
 
                 this.root.appendChild(this.crappleVideo);
-
-                this.crapplePlayer.onStatisticsUpdated = function(s) {
-                    //console.log(s);
-                };
-    
 
                 if (this.hasAttribute('autoplay')) this.play();  
             }
@@ -189,8 +181,8 @@
                     this.video = document.createElement('video');
                     this.video.setAttribute('width', this.root.offsetWidth);
                     this.video.setAttribute('height', this.root.offsetHeight);
-                    if (this.getAttribute('controls')) this.video.setAttribute('controls');
-                    if (this.getAttribute('loop')) this.video.setAttribute('loop');
+                    //if (this.hasAttribute('controls')) this.video.setAttribute('controls');
+                    if (this.hasAttribute('loop')) this.video.setAttribute('loop', '');
 
 
                     // add polyfills if possible
