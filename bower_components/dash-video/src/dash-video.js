@@ -217,7 +217,7 @@
 
                             if (this.hasAttribute('autoplay')) this.play();
                         }.bind(this)).catch(function(err) {
-                            // alert(err);
+                            console.log(err, err.stack);
 
                             // crap, switch to classic methods
                             this.dashSource = null;
