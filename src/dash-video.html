@@ -9,7 +9,7 @@
     var links = window.document.querySelectorAll('link[rel="import"]');
     var bowerComponentsPath = 'dash_video_path_not_found';
     var scripts = [];
-    var container = document.currentScript.ownerDocument.querySelector('#dash-video-scripts-container');
+    var container = document.currentScript.ownerDocument.querySelector('#dash-video-scripts-container') || document.querySelector('head');
 
 
     for (var i = 0, l = links.length; i< l; i++) {
