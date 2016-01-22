@@ -92,7 +92,7 @@
                 //if (this.isCrapple) requirejs(['bower/dash-video/lib/CrapplePlayer.js', '../lib/Stream.js'], loadComplete);
                 //else if (this.dashSource) requirejs(['bower/dash-video/lib/shaka-player.compiled.js'], loadComplete);
                 if (this.isCrapple) requirejs(['dashVideoLib/CrapplePlayer', 'dashVideoLib/Stream.js'], loadComplete);
-                else if (this.dashSource) requirejs(['dashVideoLib/shaka-player.compiled.js'], loadComplete);
+                else if (this.dashSource) requirejs(['dashVideoLib/shaka-player.compiled'], loadComplete);
                 else loadComplete();
             }
 
