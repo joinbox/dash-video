@@ -17,7 +17,7 @@
 
     app.use(compression());
         
-    app.use(express.static(__dirname, {index: 'demo.html'}));
+    app.use(express.static(__dirname, {index: 'test.html'}));
 
     app.listen(8000, function () {
       console.log('listening on port 8000!');

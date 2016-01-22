@@ -49,7 +49,7 @@ Have a look at https://opensource.org/licenses for details
 You need to include the following lines in the head section of your html file
 
     <script src="bower_components/webcomponentsjs/webcomponents.min.js"></script>
-    <link rel="import"  href="bower_components/src/dash-video.html">
+    <link rel="import"  href="bower_components/dash-video/src/dash-video.html">
 
 
 Setting up your first video using the dash-video tag
