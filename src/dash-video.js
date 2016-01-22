@@ -91,7 +91,7 @@
                 // require.js optimizer requires this syntax :/
                 //if (this.isCrapple) requirejs(['bower/dash-video/lib/CrapplePlayer.js', '../lib/Stream.js'], loadComplete);
                 //else if (this.dashSource) requirejs(['bower/dash-video/lib/shaka-player.compiled.js'], loadComplete);
-                if (this.isCrapple) requirejs(['dashVideoLib/CrapplePlayer', 'dashVideoLib/Stream.js'], loadComplete);
+                if (this.isCrapple) requirejs(['dashVideoLib/CrapplePlayer', 'dashVideoLib/Stream'], loadComplete);
                 else if (this.dashSource) requirejs(['dashVideoLib/shaka-player.compiled'], loadComplete);
                 else loadComplete();
             }
@@ -370,7 +370,7 @@
                 if (this.hasAttribute('width')) this.root.style.width = this.getAttribute('width')+'px';
                 else if (this.style.width) this.root.style.width = this.style.width;
                 else this.root.style.width = this.offsetWidth+'px';
-                
+
                 if (this.hasAttribute('height')) this.root.style.height = this.getAttribute('height')+'px';
                 else if (this.style.height) this.root.style.height = this.style.height;
                 else this.root.style.height = this.offsetHeight+'px';
