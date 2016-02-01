@@ -1,7 +1,7 @@
 {
   "name": "dash-video",
   "description": "A web component for playing back responsive dash video",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "homepage": "https://github.com/joinbox/dash-video",
   "author": "Michael van der Weg <michael@joinbox.com> (http://joinbox.com/)",
   "license": "MIT",
@@ -36,14 +36,14 @@
     "server.js",
     "test.html"
   ],
-  "_release": "0.1.7",
+  "_release": "0.1.8",
   "_resolution": {
     "type": "version",
-    "tag": "v0.1.7",
-    "commit": "518b03bac06619e4b5e92b0bfacfe84b8367b7f4"
+    "tag": "v0.1.8",
+    "commit": "7e3f67d6b35237eb665d49a912460bc854d88be1"
   },
   "_source": "git://github.com/joinbox/dash-video.git",
-  "_target": "~0.1.7",
+  "_target": "^0.1.8",
   "_originalSource": "dash-video",
   "_direct": true
 }
