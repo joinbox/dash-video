@@ -12,8 +12,8 @@
             inherits: HTMLElement.prototype
 
 
-            // flags if the coponent is running on top of ios
-            , isCrapple: false
+            // flags if the coponent is running on a mobile platform
+            , isMobile: false
             
             // ready for playback?
             , ready: false
@@ -42,7 +42,7 @@
                 this.loadedSources = [];
 
                 // need to know if we're on ios
-                this.isCrapple = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+                this.isMobile = (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream) || /android/i.test(navigator.userAgent);
 
                 // create shadow dom
                 this.sRoot = this.createShadowRoot();
@@ -56,7 +56,6 @@
 
                 // check sources
                 this.prepareSources();
-
 
 
                 // add controls
@@ -74,7 +73,7 @@
                     for (var i = 0, l = arguments.length; i < l; i++) args.push(arguments[i]);
 
                     try {
-                        if (this.isCrapple) this.createCrapplePlayer.apply(this, args);
+                        if (this.isMobile) this.createCustomPlayer.apply(this, args);
                         else this.createPlayer.apply(this, args);
                     } catch (e) {
                         console.log(e, e.stack);
@@ -89,7 +88,7 @@
                 // load specific modules depending on the browser
                 // and media sources. dont optimize this code, the
                 // require.js optimizer requires this syntax :/
-                if (this.isCrapple) requirejs(['dashVideoLib/CrapplePlayer', 'dashVideoLib/Stream'], loadComplete);
+                if (this.isMobile) requirejs(['dashVideoLib/CrapplePlayer', 'dashVideoLib/Stream'], loadComplete);
                 else if (this.dashSource) requirejs(['dashVideoLib/shaka-player.compiled'], loadComplete);
                 else loadComplete();
             }
@@ -138,7 +137,7 @@
             /**
              * create crapple player
              */
-            , createCrapplePlayer: function(Player, Stream) {
+            , createCustomPlayer: function(Player, Stream) {
                 this.crapplePlayer = new Player({
                       stream     : new Stream(this.crappleSource)
                     , useWorkers : false
@@ -262,7 +261,7 @@
                         if (window.matchMedia(childElement.media) && window.matchMedia(childElement.media).matches) {
 
                             if (childElement.type === 'application/dash+xml') this.dashSource = childElement.src;
-                            else if (childElement.type === 'video/mp4' && childElement.hasAttribute('data-crapple')) this.crappleSource = childElement.src;
+                            else if (childElement.type === 'video/mp4' && childElement.hasAttribute('data-autoplay')) this.crappleSource = childElement.src;
                             else {
                                 this.loadedSources.push({
                                       src: childElement.src
@@ -277,7 +276,7 @@
 
                         // sort sources
                         if (childElement.type === 'application/dash+xml') this.dashSource = childElement.src;
-                        else if (childElement.type === 'video/mp4' && childElement.hasAttribute('data-crapple')) this.crappleSource = childElement.src;
+                        else if (childElement.type === 'video/mp4' && childElement.hasAttribute('data-autoplay')) this.crappleSource = childElement.src;
                         else {
                             this.loadedSources.push({
                                   src: childElement.src
