@@ -14,7 +14,8 @@
 
     for (var i = 0, l = links.length; i< l; i++) {
         if (/dash-video\/src\/dash-video.html/.test(links[i].href)) {
-            bowerComponentsPath = links[i].href.replace('dash-video/src/dash-video.html', '');
+            bowerComponentsPath = links[i].href.replace(/\/?dash-video\/src\/dash-video.html/i, '');
+            break;
         }
     }
 
@@ -43,10 +44,10 @@
 
 
     // now check if we needd ot load require.js
-    if (typeof define !== 'function' || !define.amd) scripts.push(bowerComponentsPath+'dash-video/lib/require.js'); 
+    if (typeof define !== 'function' || !define.amd) scripts.push(bowerComponentsPath+'/dash-video/lib/require.js'); 
 
     // load polyfill or media match if required
-    if (!window.matchMedia) scripts.push(bowerComponentsPath+'media-match/media.match.min.js'); 
+    if (!window.matchMedia) scripts.push(bowerComponentsPath+'/media-match/media.match.min.js'); 
 
 
     // load basic dependencies
@@ -56,12 +57,12 @@
         requirejs.config({
             paths: {
                   'bower'       : bowerComponentsPath
-                , 'dashVideoLib': bowerComponentsPath+'dash-video/lib'
+                , 'dashVideoLib': bowerComponentsPath+'/dash-video/lib'
             }
         });
 
         var dashVideo = document.createElement('script');
-        dashVideo.setAttribute('src', bowerComponentsPath+'dash-video/src/dash-video.js');
+        dashVideo.setAttribute('src', bowerComponentsPath+'/dash-video/src/dash-video.js');
         container.appendChild(dashVideo);
     });
 </script>
