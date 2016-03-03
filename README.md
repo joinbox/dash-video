@@ -12,8 +12,9 @@ Known issues:
 
 - no controls
 - iOS (non fullscreen / autoplay): no audio, only short videos, up to 720p video
+- Android autoplay only works after the user interacted somehow with the website
 - the pain in the ass of encoding videos
-- dash is slow on android devices (you can disable playback using media queries)
+- dash is slow on android devices (you may disable playback using media queries)
 
 Made possible by 
 

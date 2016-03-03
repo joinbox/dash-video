@@ -29,7 +29,7 @@
 
             if (!argv.anonymous.length) return console.log('Please specify the input file!'.red);
             else if (!argv.has('resolutions'))  return console.log('Please specify the ouput resolutions (--resolutions=100p,300p,...)!'.red);
-            else if (!argv.has('resolutions'))  return console.log('Please specify the ouput breakpoints (--breakpoints=100,300,...)!'.red);
+            else if (!argv.has('breakpoints'))  return console.log('Please specify the ouput breakpoints (--breakpoints=100,300,...)!'.red);
             else if (!argv.has('out'))  return console.log('Please specify the ouput directory (--out=./out)!'.red);
 
 
@@ -221,31 +221,35 @@
 
 
             // audio
-            let audioOutFileName = `${this.fileName}_${breakpoint}px`;
-            let audioOutFile = path.join(this.out, audioOutFileName+'_audio_128k');
+            if (argv.has('audio')) {
+                let audioOutFileName = `${this.fileName}_${breakpoint}px`;
+                let audioOutFile = path.join(this.out, audioOutFileName+'_audio_128k');
 
-            this.commands.push(`ffmpeg -y -i ${this.input} -c:a libvorbis -b:a 128k -vn -r 30 -f webm -dash 1 ${audioOutFile}.webm`);
-            this.commands.push(`ffmpeg -y -i ${audioOutFile}.webm -vn -acodec libvorbis -ab 128k -dash 1 ${audioOutFile}_cued.webm`);
-            outFiles.push(`${audioOutFile}_cued.webm`);
-            this.commands.push(`rm ${audioOutFile}.webm`);
+                this.commands.push(`ffmpeg -y -i ${this.input} -c:a libvorbis -b:a 128k -vn -r 30 -f webm -dash 1 ${audioOutFile}.webm`);
+                this.commands.push(`ffmpeg -y -i ${audioOutFile}.webm -vn -acodec libvorbis -ab 128k -dash 1 ${audioOutFile}_cued.webm`);
+                outFiles.push(`${audioOutFile}_cued.webm`);
+                this.commands.push(`rm ${audioOutFile}.webm`);
+            }
 
 
-            let manifestOutFileName = `${this.fileName}_${breakpoint}px`;
-            let manifestFile = path.join(this.out, manifestOutFileName+'_manifest.mpd');
-            let manifestCommand = 'ffmpeg -y -analyzeduration 2147483647 -probesize 2147483647 ';
-            let copyString = '';
+            if (outFiles.length > 1) {
+                let manifestOutFileName = `${this.fileName}_${breakpoint}px`;
+                let manifestFile = path.join(this.out, manifestOutFileName+'_manifest.mpd');
+                let manifestCommand = 'ffmpeg -y -analyzeduration 2147483647 -probesize 2147483647 ';
+                let copyString = '';
 
-            outFiles.forEach((f, i) => {
-                manifestCommand += `-f webm_dash_manifest -i ${f} `;
-                copyString += `-map ${i} `;
-            });
+                outFiles.forEach((f, i) => {
+                    manifestCommand += `-f webm_dash_manifest -i ${f} `;
+                    copyString += `-map ${i} `;
+                });
 
-            manifestCommand += `-c copy ${copyString} -f webm_dash_manifest `;
-            manifestCommand += `-adaptation_sets "id=0,streams=${Array.apply(null, {length: outFiles.length-1}).map((v, i) => i).join(',')} id=1,streams=${outFiles.length-1}" `;
-            manifestCommand += `${manifestFile}`;
-            this.commands.push(manifestCommand);
+                manifestCommand += `-c copy ${copyString} -f webm_dash_manifest `;
+                manifestCommand += `-adaptation_sets "id=0,streams=${Array.apply(null, {length: outFiles.length-1}).map((v, i) => i).join(',')} id=1,streams=${outFiles.length-1}" `;
+                manifestCommand += `${manifestFile}`;
+                this.commands.push(manifestCommand);
 
-            this.breakpoints[breakpoint].push(manifestFile);
+                this.breakpoints[breakpoint].push(manifestFile);
+            }
 
             return Promise.resolve();
         }

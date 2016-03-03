@@ -3,15 +3,35 @@
         <head>
             <title>dash-video demo</title>
             <script src="bower_components/webcomponentsjs/webcomponents.min.js"></script>
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
         </head>
         <body>
             <link rel="import"  href="src/dash-video-dev.html">
 
+            <style type="text/css">
+                @media only screen and (max-width: 400px) {
+                    dash-video {
+                        width: 400px;
+                        height: 225px;
+                        display: block;
+                    }
+                }
 
-            <dash-video autoplay loop style="width:1280px; height:720px;" id="dash-video-player">
-                <source type="application/dash+xml"     media="screen and (min-width:1005px)"   src="test-video/sample_manifest.mpd" />
-                <source type="video/mp4"                media="screen and (min-width:1025px)"   src="test-video/sample_video_720p_1500k.mp4" />
-                <source type="video/mp4"                media="screen and (max-width:1025px)"   src="test-video/sample_crapple_720p.mp4" data-autoplay />
+                @media only screen and (min-width: 401px) {
+                    dash-video {
+                        width: 1280px;
+                        height: 720px;
+                        display: block;
+                    }
+                }
+            </style>
+
+
+            <dash-video autoplay loop id="dash-video-player">
+                <source type="application/dash+xml" media="screen and (min-width:1005px)" src="test-video/sample_manifest.mpd" />
+                <source type="video/mp4" src="test-video/sample_video_720p_1500k.mp4" />
+                <source type="video/mp4" media="screen and (max-width:400px)" src="test-video/sample_crapple_720p.mp4" data-autoplay />
+                <source type="video/mp4" media="screen and (min-width:401px)" src="test-video/sample_crapple_720p.mp4" data-autoplay />
             </dash-video>
 
 
