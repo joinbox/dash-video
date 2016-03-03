@@ -109,6 +109,9 @@ p.decode(<binary>);
     var lastWidth;
     var lastHeight;
     var onPictureDecoded = function(buffer, width, height, time, timeStart) {
+      //width = self._forceSize.width;
+      //height = self._forceSize.height;
+
       self.onPictureDecoded(buffer, width, height, time, timeStart);
       
       var startTime = nowValue();
@@ -118,14 +121,13 @@ p.decode(<binary>);
       };
       
       if (lastWidth !== width || lastHeight !== height || !self.webGLCanvas){
-        self.canvas.width = width;
-        self.canvas.height = height;
+        //self.canvas.width = width;
+        //self.canvas.height = height;
         lastWidth = width;
         lastHeight = height;
         self._size = new Size(width, height);
         self.webGLCanvas = new YUVWebGLCanvas(self.canvas, self._size, {w:self._forceSize.width, h: self._forceSize.height});
-        //self.canvas.width = 1280;
-       // self.canvas.height = 720;
+        self.webGLCanvas.resize();
       };
       
       var lumaSize = width * height;
@@ -164,13 +166,32 @@ p.decode(<binary>);
         if (!ctx){
           self.ctx = canvas.getContext('2d');
           ctx = self.ctx;
+          ctx.scale(self._forceSize.width/width, self._forceSize.height/height);
 
           self.imgData = ctx.createImageData(width, height);
           imgData = self.imgData;
         };
 
         imgData.data.set(buffer);
-        ctx.putImageData(imgData, 0, 0);
+
+        // do we need to scale?
+        if (self._forceSize.width/width !== 1) {
+          var scaleCanvas = document.createElement('canvas');
+          scaleCanvas.width = width;
+          scaleCanvas.height = height;
+          scaleCanvas.getContext("2d").putImageData(imgData, 0, 0);
+          //ctx.scale(self._forceSize.width/width, self._forceSize.height/height);
+          ctx.drawImage(scaleCanvas, 0, 0);
+        }
+        else {
+          ctx.putImageData(imgData, 0, 0);
+        }
+
+
+
+        
+        //
+        
         
         if (self.onTime){
           self.onTime({
@@ -236,11 +257,11 @@ p.decode(<binary>);
     this._config.size.height = this._config.size.height || 200;
     
     this.canvas = document.createElement('canvas');
-    this.canvas.width = this._config.size.width;
-    this.canvas.height = this._config.size.height;
+    //this.canvas.width = this._config.size.width;
+    //this.canvas.height = this._config.size.height;
     this.canvas.style.backgroundColor = "#ffffff";
 
-    this.domNode = this.canvas;
+   // this.domNode = this.canvas;
     
     this._size = new Size(this._config.size.width, this._config.size.height);
     lastWidth = this._config.size.width;
@@ -251,6 +272,31 @@ p.decode(<binary>);
   Player.prototype = {
     
     onPictureDecoded: function(buffer, width, height){}
+    
+    , resize: function(size) {
+      var originalWidth = this._config.size.width;
+      var originalHeight = this._config.size.height;
+
+      this._config.size.width = size.w;
+      this._config.size.height = size.h;
+      this._forceSize.width = size.w;
+      this._forceSize.height = size.h;
+
+      this._size = new Size(size.w, size.h);
+
+      // we have to recreate the canvas
+      this.canvas = document.createElement('canvas');
+      this.canvas.style.backgroundColor = "#ffffff";
+
+
+      //if (this.ctx) this.ctx = this.canvas.getContext('2d');
+      if (this.webGLCanvas) this.webGLCanvas = null;
+      if (this.ctx) this.ctx = null;
+
+      //if (this.ctx) this.ctx.scale(size.w/originalWidth, size.h/originalHeight);
+
+      return this.canvas;
+    }
     
   };
   

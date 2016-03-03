@@ -11,12 +11,28 @@
         Player = new Class({
             inherits: HTMLElement.prototype
 
+            // source id counter
+            , sourceId: 0
 
-            // flags if the coponent is running on a mobile platform
-            , isMobile: false
+            // flags if the component was loaded on iOS
+            // in case the crapple player must be loaded
+            , isCrapple: false
+
+            // android does autoplay only after any user
+            // interaction, so we need to know if we're 
+            // on that platform
+            , isAndroid: false
+
+            // flags if there was any user interaction 
+            // so that autplay on android works correctly
+            , userInteraction: false
+
             
             // ready for playback?
             , ready: false
+
+            // internal playing flag
+            , isPlaying: false
 
             // playing flag
             , playing: {
@@ -41,21 +57,60 @@
                 // storage for the video sources
                 this.loadedSources = [];
 
+
+
                 // need to know if we're on ios
-                this.isMobile = (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream) || /android/i.test(navigator.userAgent);
+                this.isCrapple = (/iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream);
+
+                // and android too
+                this.isAndroid = /android/i.test(navigator.userAgent);
+
+
 
                 // create shadow dom
                 this.sRoot = this.createShadowRoot();
+
+
+
+
+                // load event listeners
+                this.onLoad = [];
+
+                // play event listeners
+                this.playListeners = [];
+
+
+
+                // wait for android user interfaction so that
+                // the autoplay functionality works
+                window.addEventListener('touchstart', function interactionListener() {
+                    this.userInteraction = true;
+
+                    this.playListeners.forEach(function(cb) {
+                        cb();
+                    });
+
+                    this.playListeners = [];
+
+                    // listen one time only
+                    window.removeEventListener('touchstart', interactionListener);
+                }.bind(this));
+
+
+                // listen for resize events
+                window.addEventListener('resize', this.onResize.bind(this));
+                window.addEventListener('load', this.onResize.bind(this));
+                window.addEventListener('orientationchange', this.onResize.bind(this));
+
 
 
                 // create ui root element
                 this.createRoot();
 
 
+                // set up the basics
+                this.setup();
 
-
-                // check sources
-                this.prepareSources();
 
 
                 // add controls
@@ -69,18 +124,20 @@
 
 
                 var loadComplete = function() {
-                    var args = [];
-                    for (var i = 0, l = arguments.length; i < l; i++) args.push(arguments[i]);
 
-                    try {
-                        if (this.isMobile) this.createCustomPlayer.apply(this, args);
-                        else this.createPlayer.apply(this, args);
-                    } catch (e) {
-                        console.log(e, e.stack);
-                    }
+                    this.modules = [];
+                    for (var i = 0, l = arguments.length; i < l; i++) this.modules.push(arguments[i]);
+
 
                     // player is ready to be used
                     this.loaded = true;
+
+                    // emit load event
+                    this.onLoad.forEach(function(cb) {
+                        cb();
+                    });
+
+                    this.onLoad = [];
                 }.bind(this);
 
 
@@ -88,7 +145,7 @@
                 // load specific modules depending on the browser
                 // and media sources. dont optimize this code, the
                 // require.js optimizer requires this syntax :/
-                if (this.isMobile) requirejs(['dashVideoLib/CrapplePlayer', 'dashVideoLib/Stream'], loadComplete);
+                if (this.isCrapple) requirejs(['dashVideoLib/CrapplePlayer', 'dashVideoLib/Stream'], loadComplete);
                 else if (this.dashSource) requirejs(['dashVideoLib/shaka-player.compiled'], loadComplete);
                 else loadComplete();
             }
@@ -105,9 +162,93 @@
 
 
 
+
+
+            /**
+             * remove old players, create new ones
+             */
+            , setup: function(callback) {
+
+                var resumeSetup = function() {
+
+                    // check if the video sources have changed
+                    if (this.prepareSources()) {
+
+
+                        this.pause();
+
+                        // remove old stuff
+                        if (this.video) this.video.remove();
+                        else if (this.crapplePlayer) {
+                            this.crapplePlayer.canvas.remove();
+                            delete this.crapplePlayer;
+                        }
+
+
+                        try {
+                            if (this.isCrapple) {
+                                if (this.hasAttribute('autoplay') || this.isPlaying) {
+                                    // load player now
+                                    this.createCustomPlayer.apply(this, this.modules);
+                                }
+                            }
+                            else this.createPlayer.apply(this, this.modules);
+                        } catch (e) {
+                            console.log(e, e.stack);
+                        }
+
+                        if (callback) callback(true);
+                    }
+                    else if (callback) callback(false);
+                }.bind(this);
+
+
+                if (this.loaded) resumeSetup();
+                else this.onLoad.push(resumeSetup);
+            }
+
+
+
+
+
+
+
+
+
+
+
+
             , play: function() {
-                if (this.video) this.video.play();
-                else if (this.crapplePlayer) this.crapplePlayer.play();
+                if (this.video) {
+                    if (this.isAndroid) {
+                        if (this.userInteraction) {
+                            this.isPlaying = true;
+                            this.video.play();
+                        }
+                        else this.playListeners.push(this.play.bind(this));
+                    }
+                    else {
+                        this.video.play();
+                        this.isPlaying = true;
+                    }
+                }
+                else if (this.isCrapple) {
+                    // create the player if required, then
+                    // start to play
+                    if (this.crapplePlayer) {
+                        this.crapplePlayer.play();
+                        this.isPlaying = true;
+                    }
+                    else {
+
+                        // the crapple player will load itself when 
+                        // the compoentn has finished loading
+                        if (this.loaded) {
+                            this.createCustomPlayer.apply(this, this.modules);
+                            this.isPlaying = true;
+                        }
+                    }
+                }
             }
 
 
@@ -122,6 +263,7 @@
 
 
             , pause: function() {
+                this.isPlaying = false;
                 if (this.video) this.video.pause();
                 else if (this.crapplePlayer) this.crapplePlayer.pause();
             }
@@ -151,13 +293,16 @@
                 });
 
 
+                this.resize();
+
                 this.crappleVideo = this.crapplePlayer.canvas;
                 this.crappleVideo.setAttribute('width', this.root.offsetWidth);
                 this.crappleVideo.setAttribute('height', this.root.offsetHeight);
 
+
                 this.root.appendChild(this.crappleVideo);
 
-                if (this.hasAttribute('autoplay')) this.play();  
+                this.play();  
             }
 
 
@@ -234,7 +379,7 @@
                         this.root.appendChild(this.video);
 
                         // autplay?
-                        if (this.hasAttribute('autoplay')) this.play();
+                        if (this.hasAttribute('autoplay') || this.isPlaying) this.play();
                     }
                 }
             }
@@ -255,7 +400,11 @@
              * the medie query if present.
              */
             , prepareSources: function() {
+                var sources = [];
+
                 Array.prototype.forEach.call(this.children, function(childElement) {
+                    if (!childElement.sourceId) childElement.sourceId = ++this.sourceId;
+
                     if (childElement.media && window.matchMedia) {
 
                         if (window.matchMedia(childElement.media) && window.matchMedia(childElement.media).matches) {
@@ -263,10 +412,11 @@
                             if (childElement.type === 'application/dash+xml') this.dashSource = childElement.src;
                             else if (childElement.type === 'video/mp4' && childElement.hasAttribute('data-autoplay')) this.crappleSource = childElement.src;
                             else {
-                                this.loadedSources.push({
+                                sources.push({
                                       src: childElement.src
                                     , media: childElement.media
                                     , type: childElement.type
+                                    , id: childElement.sourceId
                                 });
                             }
                         }
@@ -278,14 +428,31 @@
                         if (childElement.type === 'application/dash+xml') this.dashSource = childElement.src;
                         else if (childElement.type === 'video/mp4' && childElement.hasAttribute('data-autoplay')) this.crappleSource = childElement.src;
                         else {
-                            this.loadedSources.push({
+                            sources.push({
                                   src: childElement.src
                                 , media: null
                                 , type: childElement.type
+                                , id: childElement.sourceId
                             });
                         }
                     }
                 }.bind(this));
+
+
+                var oldSources = this.loadedSources.map(function(src) {
+                    return src.id;
+                }).sort().join('');
+
+                var newSources = sources.map(function(src) {
+                    return src.id;
+                }).sort().join('');
+
+
+                this.loadedSources = sources;
+
+                // return true if the sources are not the same
+                // as when we run the last time 
+                return newSources !== oldSources;
             }
 
 
@@ -357,15 +524,8 @@
                 this.root.style.display = 'inline-block';
                 
 
-                // check if there is a width && height attribute
-                if (this.hasAttribute('width')) this.root.style.width = this.getAttribute('width')+'px';
-                else if (this.style.width) this.root.style.width = this.style.width;
-                else this.root.style.width = this.offsetWidth+'px';
-
-                if (this.hasAttribute('height')) this.root.style.height = this.getAttribute('height')+'px';
-                else if (this.style.height) this.root.style.height = this.style.height;
-                else this.root.style.height = this.offsetHeight+'px';
-
+                // call the resizer
+                this.resize();
 
                 // add to shadow
                 this.sRoot.appendChild(this.root);
@@ -376,6 +536,81 @@
             }
 
 
+
+
+
+            /**
+             * resize debouncer
+             */
+            , onResize: function() {
+
+                // timeout for actual resizing
+                if (this.resizeTimeout) clearTimeout(this.resizeTimeout);
+                this.resizeTimeout = setTimeout(function() {
+                    if (this.videoTimeout) clearTimeout(this.videoTimeout);
+                    this.resize();
+                }.bind(this), 500);
+
+                // timeout for reinitilization with new video sources
+                if (this.videoTimeout) clearTimeout(this.videoTimeout);
+                this.videoTimeout = setTimeout(function() {
+                    if (this.resizeTimeout) clearTimeout(this.resizeTimeout);
+                    this.resize();
+                    this.setup();
+                }.bind(this), 1000);
+            }
+
+
+
+
+
+
+            /**
+             * resize event listner
+             */
+            , resize: function() {
+                var cs = window.getComputedStyle(this);
+
+                if (this.hasAttribute('width')) this.root.style.width = this.getAttribute('width')+'px';
+                else if (this.style.width) this.root.style.width = this.style.width;
+                else if (!isNaN(cs.width)) this.root.style.width = cs.width;
+                else this.root.style.width = this.offsetWidth+'px';
+
+                if (this.hasAttribute('height')) this.root.style.height = this.getAttribute('height')+'px';
+                else if (this.style.height) this.root.style.height = this.style.height;
+                else if (!isNaN(cs.height)) this.root.style.height = cs.height;
+                else this.root.style.height = this.offsetHeight+'px';
+
+
+                // don't do a shit if there arent any changes
+                if (this.elementHeight !== this.root.offsetHeight || this.elementWidth !== this.root.offsetWidth) {
+
+                    // get computed height
+                    this.elementHeight = this.root.offsetHeight;
+                    this.elementWidth = this.root.offsetWidth;
+
+
+                    this.setup(function(isNewPlayer) {
+                        console.log('new player!');
+
+                        if (!isNewPlayer) {
+                            // resize the video if required
+                            if (this.video) {
+                                this.video.height = this.elementHeight;
+                                this.video.width = this.elementWidth;
+                            }
+
+                            if (this.crapplePlayer) {
+                                var canvas = this.crapplePlayer.resize(this.elementWidth, this.elementHeight);
+
+                                if (this.crappleVideo) this.crappleVideo.remove();
+                                this.crappleVideo = canvas;
+                                this.root.appendChild(this.crappleVideo);
+                            }
+                        }
+                    }.bind(this));
+                }
+            }
 
 
 

@@ -444,8 +444,8 @@
     function constructor(canvas, size, useFrameBuffer, canvasSize) {
       this.canvas = canvas;
       this.size = size;
-      this.canvas.width = canvasSize ? canvasSize.w : size.w;
-      this.canvas.height = canvasSize ? canvasSize.h : size.h;
+      //this.canvas.width = canvasSize ? canvasSize.w : size.w;
+      //this.canvas.height = canvasSize ? canvasSize.h : size.h;
 
       this.onInitWebGL();
       this.onInitShaders();
@@ -581,6 +581,9 @@
     }
 
     constructor.prototype = {
+      resize: function(canvas) {
+        
+      },
       toString: function() {
         return "WebGLCanvas Size: " + this.size;
       },
